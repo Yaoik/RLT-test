@@ -16,3 +16,5 @@ class Handler:
     def __str__(self) -> str:
         return f'{self.dt_from} - {self.dt_upto}\n{self.group_type=}'
     
+    def request_to_responce(self) -> dict[str, list]:
+        return {'test': []}
