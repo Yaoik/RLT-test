@@ -1,6 +1,6 @@
 import unittest
 from utils import Handler, Request
-
+import asyncio
 
 
 class TestStringMethods(unittest.TestCase):
@@ -14,8 +14,8 @@ class TestStringMethods(unittest.TestCase):
         result = {"dataset": [5906586, 5515874, 5889803, 6092634],"labels": ["2022-09-01T00:00:00", "2022-10-01T00:00:00", "2022-11-01T00:00:00", "2022-12-01T00:00:00"]}
 
         request = Request(**data)
-
-        self.assertEqual(Handler(request).request_to_responce(), result)
+        handler = Handler(request)
+        self.assertEqual(asyncio.run(handler.request_to_responce()), result)
         
     def test_day(self):
         data = {
@@ -44,8 +44,8 @@ class TestStringMethods(unittest.TestCase):
         }
 
         request = Request(**data)
-
-        self.assertEqual(Handler(request).request_to_responce(), result)
+        handler = Handler(request)
+        self.assertEqual(asyncio.run(handler.request_to_responce()), result)
 
     def test_hour(self):
         data = {
@@ -65,8 +65,65 @@ class TestStringMethods(unittest.TestCase):
         }
 
         request = Request(**data)
+        handler = Handler(request)
+        self.assertEqual(asyncio.run(handler.request_to_responce()), result)
+        
+    def test_month_labels(self):
+        data = {
+            "dt_from": "2022-09-01T00:00:00",
+            "dt_upto": "2022-12-31T23:59:00",
+            "group_type": "month"
+        }
+        result = ["2022-09-01T00:00:00", "2022-10-01T00:00:00", "2022-11-01T00:00:00", "2022-12-01T00:00:00"]
+        request = Request(**data)
+        handler = Handler(request)
+        self.assertEqual(asyncio.run(handler._get_labels()), result)
+    
+    def test_day_labels(self):
+        data = {
+            "dt_from": "2022-10-01T00:00:00",
+            "dt_upto": "2022-11-30T23:59:00",
+            "group_type": "day"
+        }
+        result =  ["2022-10-01T00:00:00", "2022-10-02T00:00:00", "2022-10-03T00:00:00", "2022-10-04T00:00:00",
+           "2022-10-05T00:00:00", "2022-10-06T00:00:00", "2022-10-07T00:00:00", "2022-10-08T00:00:00",
+           "2022-10-09T00:00:00", "2022-10-10T00:00:00", "2022-10-11T00:00:00", "2022-10-12T00:00:00",
+           "2022-10-13T00:00:00", "2022-10-14T00:00:00", "2022-10-15T00:00:00", "2022-10-16T00:00:00",
+           "2022-10-17T00:00:00", "2022-10-18T00:00:00", "2022-10-19T00:00:00", "2022-10-20T00:00:00",
+           "2022-10-21T00:00:00", "2022-10-22T00:00:00", "2022-10-23T00:00:00", "2022-10-24T00:00:00",
+           "2022-10-25T00:00:00", "2022-10-26T00:00:00", "2022-10-27T00:00:00", "2022-10-28T00:00:00",
+           "2022-10-29T00:00:00", "2022-10-30T00:00:00", "2022-10-31T00:00:00", "2022-11-01T00:00:00",
+           "2022-11-02T00:00:00", "2022-11-03T00:00:00", "2022-11-04T00:00:00", "2022-11-05T00:00:00",
+           "2022-11-06T00:00:00", "2022-11-07T00:00:00", "2022-11-08T00:00:00", "2022-11-09T00:00:00",
+           "2022-11-10T00:00:00", "2022-11-11T00:00:00", "2022-11-12T00:00:00", "2022-11-13T00:00:00",
+           "2022-11-14T00:00:00", "2022-11-15T00:00:00", "2022-11-16T00:00:00", "2022-11-17T00:00:00",
+           "2022-11-18T00:00:00", "2022-11-19T00:00:00", "2022-11-20T00:00:00", "2022-11-21T00:00:00",
+           "2022-11-22T00:00:00", "2022-11-23T00:00:00", "2022-11-24T00:00:00", "2022-11-25T00:00:00",
+           "2022-11-26T00:00:00", "2022-11-27T00:00:00", "2022-11-28T00:00:00", "2022-11-29T00:00:00",
+           "2022-11-30T00:00:00"]
 
-        self.assertEqual(Handler(request).request_to_responce(), result)
+        request = Request(**data)
+        handler = Handler(request)
+        self.assertEqual(asyncio.run(handler._get_labels()), result)
+        
+    def test_hour_labels(self):
+        data = {
+            "dt_from": "2022-02-01T00:00:00",
+            "dt_upto": "2022-02-02T00:00:00",
+            "group_type": "hour"
+        }
+
+        result = ["2022-02-01T00:00:00", "2022-02-01T01:00:00", "2022-02-01T02:00:00", "2022-02-01T03:00:00",
+           "2022-02-01T04:00:00", "2022-02-01T05:00:00", "2022-02-01T06:00:00", "2022-02-01T07:00:00",
+           "2022-02-01T08:00:00", "2022-02-01T09:00:00", "2022-02-01T10:00:00", "2022-02-01T11:00:00",
+           "2022-02-01T12:00:00", "2022-02-01T13:00:00", "2022-02-01T14:00:00", "2022-02-01T15:00:00",
+           "2022-02-01T16:00:00", "2022-02-01T17:00:00", "2022-02-01T18:00:00", "2022-02-01T19:00:00",
+           "2022-02-01T20:00:00", "2022-02-01T21:00:00", "2022-02-01T22:00:00", "2022-02-01T23:00:00",
+           "2022-02-02T00:00:00"]
+
+        request = Request(**data)
+        handler = Handler(request)
+        self.assertEqual(asyncio.run(handler._get_labels()), result)
         
 if __name__ == '__main__':
     unittest.main()
