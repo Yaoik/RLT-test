@@ -7,6 +7,7 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 import json
+from utils import Handler, Request
 
 from secret import KEY
 TOKEN = KEY
@@ -23,7 +24,13 @@ async def command_start_handler(message: Message) -> None:
 @dp.message()
 async def echo_handler(message: Message) -> None:
     try:
-        await message.send_copy(chat_id=message.chat.id)
+        text = message.text
+        assert isinstance(text, str)
+        data = json.loads(text.strip())
+        request = Request(**data)
+        handler = Handler(request)
+        res = await handler.request_to_responce()
+        await message.answer(json.dumps(res))
     except TypeError:
         await message.answer("Nice try!")
 
