@@ -8,6 +8,8 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 import json
 from utils import Handler, Request
+from aiogram.exceptions import TelegramEntityTooLarge
+
 
 from secret import KEY
 TOKEN = KEY
@@ -18,7 +20,7 @@ dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
-    await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!")
+    await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!") # type: ignore
 
 
 @dp.message()
@@ -32,7 +34,13 @@ async def echo_handler(message: Message) -> None:
         res = await handler.request_to_responce()
         await message.answer(json.dumps(res))
     except TypeError:
-        await message.answer("Nice try!")
+        await message.answer("TypeError!")
+    except ValueError:
+        await message.answer('Invalid data! (Expects JSON)')
+    except TelegramEntityTooLarge:
+        await message.answer('Responce too large!')
+    except Exception as e:
+        await message.answer(f'ERROR!   {str(e)}')
 
 
 async def main() -> None:
